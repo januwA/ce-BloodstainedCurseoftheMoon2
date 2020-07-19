@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CheatTable CheatEngineTableVersion="31">
+  <CheatEntries>
+    <CheatEntry>
+      <ID>8</ID>
+      <Description>"无限HP"</Description>
+      <LastState Activated="1"/>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>[ENABLE]
+aobscanmodule(hp_INJECT,game.exe,C1 F3 0F 5D 84 90 F8 02 00 00)
+alloc(newmem,$1000)
+
+label(return)
+
+label(zeroHp)
+
+newmem:
+  // 避免死亡卡住
+  comiss xmm0,[zeroHp]
+  je return
+
+  maxss xmm0,[eax+edx*4+000002F8]
+  jmp return
+
+align 10 CC
+zeroHp:
+  dd (float)0
+
+hp_INJECT+01:
+  jmp newmem
+  nop 4
+return:
+registersymbol(hp_INJECT zeroHp)
+
+[DISABLE]
+
+hp_INJECT+01:
+  db F3 0F 5D 84 90 F8 02 00 00
+
+unregistersymbol(hp_INJECT zeroHp)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: "game.exe"+3B79EE
+
+"game.exe"+3B79CE: 74 34                          -  je game.exe+3B7A04
+"game.exe"+3B79D0: 83 F9 21                       -  cmp ecx,21
+"game.exe"+3B79D3: 72 04                          -  jb game.exe+3B79D9
+"game.exe"+3B79D5: 33 C0                          -  xor eax,eax
+"game.exe"+3B79D7: EB 07                          -  jmp game.exe+3B79E0
+"game.exe"+3B79D9: 8D 04 CD 08 82 1C 01           -  lea eax,[ecx*8+game.exe+9E8208]
+"game.exe"+3B79E0: 81 FA FF 00 00 00              -  cmp edx,000000FF
+"game.exe"+3B79E6: 74 1C                          -  je game.exe+3B7A04
+"game.exe"+3B79E8: 8B 40 04                       -  mov eax,[eax+04]
+"game.exe"+3B79EB: 0F 28 C1                       -  movaps xmm0,xmm1
+// ---------- INJECTING HERE ----------
+"game.exe"+3B79EE: F3 0F 5D 84 90 F8 02 00 00     -  minss xmm0,[eax+edx*4+000002F8]
+// ---------- DONE INJECTING  ----------
+"game.exe"+3B79F7: F3 0F 11 84 90 B8 02 00 00     -  movss [eax+edx*4+000002B8],xmm0
+"game.exe"+3B7A00: C6 40 08 01                    -  mov byte ptr [eax+08],01
+"game.exe"+3B7A04: 0F 2F D1                       -  comiss xmm2,xmm1
+"game.exe"+3B7A07: 8B 86 80 04 00 00              -  mov eax,[esi+00000480]
+"game.exe"+3B7A0D: F3 0F 11 48 70                 -  movss [eax+70],xmm1
+"game.exe"+3B7A12: 72 36                          -  jb game.exe+3B7A4A
+"game.exe"+3B7A14: 8B 8E 84 01 00 00              -  mov ecx,[esi+00000184]
+"game.exe"+3B7A1A: B8 01 00 00 00                 -  mov eax,00000001
+"game.exe"+3B7A1F: D3 E0                          -  shl eax,cl
+"game.exe"+3B7A21: 89 45 EC                       -  mov [ebp-14],eax
+}
+</AssemblerScript>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>4</ID>
+      <Description>"无限MP"</Description>
+      <LastState Activated="1"/>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>[ENABLE]
+// 1 消耗MP时
+aobscanmodule(mp_INJECT,game.exe,89 81 38 03 00 00 8B 42 04 C6)
+alloc(newmem_1,$1000)
+
+label(return_1)
+
+newmem_1:
+  //mov eax,[ecx+0000033C]
+  mov [ecx+00000338],eax
+  jmp return_1
+
+mp_INJECT:
+  jmp newmem_1
+  nop
+return_1:
+registersymbol(mp_INJECT)
+
+
+// 2 检擦MP时
+aobscanmodule(notCheckMP_INJECT,game.exe,73 04 32 C0 5E)
+alloc(newmem_2,$1000)
+
+label(return_2)
+
+newmem_2:
+  jmp game.exe+3B0091
+  xor al,al
+  pop esi
+  jmp return_2
+
+notCheckMP_INJECT:
+  jmp newmem_2
+return_2:
+registersymbol(notCheckMP_INJECT)
+
+[DISABLE]
+// 1
+mp_INJECT:
+  db 89 81 38 03 00 00
+unregistersymbol(mp_INJECT)
+dealloc(newmem_1)
+
+// 2
+notCheckMP_INJECT:
+  db 73 04 32 C0 5E
+unregistersymbol(notCheckMP_INJECT)
+dealloc(newmem_2)
+
+{
+// 1
+// ORIGINAL CODE - INJECTION POINT: "game.exe"+3B8519
+
+"game.exe"+3B84F9: 74 2B                       -  je game.exe+3B8526
+"game.exe"+3B84FB: 83 FA 21                    -  cmp edx,21
+"game.exe"+3B84FE: 72 04                       -  jb game.exe+3B8504
+"game.exe"+3B8500: 33 D2                       -  xor edx,edx
+"game.exe"+3B8502: EB 07                       -  jmp game.exe+3B850B
+"game.exe"+3B8504: 8D 14 D5 08 82 1C 01        -  lea edx,[edx*8+game.exe+9E8208]
+"game.exe"+3B850B: 8B 4A 04                    -  mov ecx,[edx+04]
+"game.exe"+3B850E: 8B 81 3C 03 00 00           -  mov eax,[ecx+0000033C]
+"game.exe"+3B8514: 3B F0                       -  cmp esi,eax
+"game.exe"+3B8516: 0F 42 C6                    -  cmovb eax,esi
+// ---------- INJECTING HERE ----------
+"game.exe"+3B8519: 89 81 38 03 00 00           -  mov [ecx+00000338],eax
+// ---------- DONE INJECTING  ----------
+"game.exe"+3B851F: 8B 42 04                    -  mov eax,[edx+04]
+"game.exe"+3B8522: C6 40 08 01                 -  mov byte ptr [eax+08],01
+"game.exe"+3B8526: 5E                          -  pop esi
+"game.exe"+3B8527: C3                          -  ret
+"game.exe"+3B8528: CC                          -  int 3
+"game.exe"+3B8529: CC                          -  int 3
+"game.exe"+3B852A: CC                          -  int 3
+"game.exe"+3B852B: CC                          -  int 3
+"game.exe"+3B852C: CC                          -  int 3
+"game.exe"+3B852D: CC                          -  int 3
+}
+</AssemblerScript>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>6</ID>
+      <Description>"无碰撞"</Description>
+      <LastState/>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>[ENABLE]
+aobscanmodule(dsdfsf_INJECT,game.exe,74 0B FF 75 0C 51)
+alloc(newmem,$1000)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  jmp game.exe+3A063A
+  push [ebp+0C]
+  jmp return
+
+dsdfsf_INJECT:
+  jmp newmem
+return:
+registersymbol(dsdfsf_INJECT)
+
+[DISABLE]
+
+dsdfsf_INJECT:
+  db 74 0B FF 75 0C
+
+unregistersymbol(dsdfsf_INJECT)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: "game.exe"+3A062D
+
+"game.exe"+3A061B: CC                    -  int 3 
+"game.exe"+3A061C: CC                    -  int 3 
+"game.exe"+3A061D: CC                    -  int 3 
+"game.exe"+3A061E: CC                    -  int 3 
+"game.exe"+3A061F: CC                    -  int 3 
+"game.exe"+3A0620: 55                    -  push ebp
+"game.exe"+3A0621: 8B EC                 -  mov ebp,esp
+"game.exe"+3A0623: 8B 4D 08              -  mov ecx,[ebp+08]
+"game.exe"+3A0626: E8 75 5C 00 00        -  call game.exe+3A62A0
+"game.exe"+3A062B: 85 C0                 -  test eax,eax
+// ---------- INJECTING HERE ----------
+"game.exe"+3A062D: 74 0B                 -  je game.exe+3A063A
+"game.exe"+3A062F: FF 75 0C              -  push [ebp+0C]
+// ---------- DONE INJECTING  ----------
+"game.exe"+3A0632: 51                    -  push ecx
+"game.exe"+3A0633: 8B C8                 -  mov ecx,eax
+"game.exe"+3A0635: E8 06 01 00 00        -  call game.exe+3A0740
+"game.exe"+3A063A: 5D                    -  pop ebp
+"game.exe"+3A063B: C3                    -  ret 
+"game.exe"+3A063C: CC                    -  int 3 
+"game.exe"+3A063D: CC                    -  int 3 
+"game.exe"+3A063E: CC                    -  int 3 
+"game.exe"+3A063F: CC                    -  int 3 
+"game.exe"+3A0640: 55                    -  push ebp
+}
+</AssemblerScript>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>10</ID>
+      <Description>"一击必杀"</Description>
+      <LastState Activated="1"/>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>[ENABLE]
+aobscanmodule(dsdadas_INJECT,game.exe,F3 0F 11 49 70 8B 87)
+alloc(newmem,$1000)
+
+label(return)
+
+newmem:
+  mov [ecx+70],(float)0
+  jmp return
+
+dsdadas_INJECT:
+  jmp newmem
+return:
+registersymbol(dsdadas_INJECT)
+
+[DISABLE]
+
+dsdadas_INJECT:
+  db F3 0F 11 49 70
+
+unregistersymbol(dsdadas_INJECT)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: "game.exe"+372AF9
+
+"game.exe"+372AD2: 0F 57 05 50 77 41 01     -  xorps xmm0,[game.exe+647750]
+"game.exe"+372AD9: 8B 8F 80 04 00 00        -  mov ecx,[edi+00000480]
+"game.exe"+372ADF: F3 0F 58 41 70           -  addss xmm0,[ecx+70]
+"game.exe"+372AE4: 0F 2F D0                 -  comiss xmm2,xmm0
+"game.exe"+372AE7: 76 05                    -  jna game.exe+372AEE
+"game.exe"+372AE9: 0F 28 CA                 -  movaps xmm1,xmm2
+"game.exe"+372AEC: EB 0B                    -  jmp game.exe+372AF9
+"game.exe"+372AEE: 8B 41 60                 -  mov eax,[ecx+60]
+"game.exe"+372AF1: F3 0F 10 08              -  movss xmm1,[eax]
+"game.exe"+372AF5: F3 0F 5D C8              -  minss xmm1,xmm0
+// ---------- INJECTING HERE ----------
+"game.exe"+372AF9: F3 0F 11 49 70           -  movss [ecx+70],xmm1
+// ---------- DONE INJECTING  ----------
+"game.exe"+372AFE: 8B 87 80 04 00 00        -  mov eax,[edi+00000480]
+"game.exe"+372B04: 0F 2F 50 70              -  comiss xmm2,[eax+70]
+"game.exe"+372B08: 0F 82 CE 00 00 00        -  jb game.exe+372BDC
+"game.exe"+372B0E: 8D 45 E0                 -  lea eax,[ebp-20]
+"game.exe"+372B11: 50                       -  push eax
+"game.exe"+372B12: E8 09 B3 09 00           -  call game.exe+40DE20
+"game.exe"+372B17: F3 0F 10 87 C0 01 00 00  -  movss xmm0,[edi+000001C0]
+"game.exe"+372B1F: F3 0F 5C 00              -  subss xmm0,[eax]
+"game.exe"+372B23: E8 F8 CD D6 FF           -  call game.exe+DF920
+"game.exe"+372B28: F3 0F 10 8F A8 04 00 00  -  movss xmm1,[edi+000004A8]
+}
+</AssemblerScript>
+    </CheatEntry>
+  </CheatEntries>
+  <CheatCodes>
+    <CodeEntry Color="20000000">
+      <Description>受到攻击</Description>
+      <AddressString>game.exe+3B79F7</AddressString>
+      <Before>
+        <Byte>90</Byte>
+        <Byte>F8</Byte>
+        <Byte>02</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </Before>
+      <Actual>
+        <Byte>F3</Byte>
+        <Byte>0F</Byte>
+        <Byte>11</Byte>
+        <Byte>84</Byte>
+        <Byte>90</Byte>
+        <Byte>B8</Byte>
+        <Byte>02</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </Actual>
+      <After>
+        <Byte>C6</Byte>
+        <Byte>40</Byte>
+        <Byte>08</Byte>
+        <Byte>01</Byte>
+        <Byte>0F</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry Color="20000000">
+      <Description>替换了 call dword ptr [eax+7C]</Description>
+      <AddressString>game.exe+3A179F</AddressString>
+      <Before>
+        <Byte>FF</Byte>
+        <Byte>FF</Byte>
+        <Byte>51</Byte>
+        <Byte>8B</Byte>
+        <Byte>CF</Byte>
+      </Before>
+      <Actual>
+        <Byte>FF</Byte>
+        <Byte>50</Byte>
+        <Byte>7C</Byte>
+      </Actual>
+      <After>
+        <Byte>F6</Byte>
+        <Byte>86</Byte>
+        <Byte>84</Byte>
+        <Byte>04</Byte>
+        <Byte>00</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry Color="20000000">
+      <Description>碰撞检测</Description>
+      <AddressString>game.exe+3A062D</AddressString>
+      <Before>
+        <Byte>5C</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+        <Byte>85</Byte>
+        <Byte>C0</Byte>
+      </Before>
+      <Actual>
+        <Byte>EB</Byte>
+        <Byte>0B</Byte>
+      </Actual>
+      <After>
+        <Byte>FF</Byte>
+        <Byte>75</Byte>
+        <Byte>0C</Byte>
+        <Byte>51</Byte>
+        <Byte>8B</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry Color="20000000">
+      <Description>替换了 ja game.exe+1005AE</Description>
+      <AddressString>game.exe+1005A1</AddressString>
+      <Before>
+        <Byte>41</Byte>
+        <Byte>70</Byte>
+        <Byte>0F</Byte>
+        <Byte>2F</Byte>
+        <Byte>C8</Byte>
+      </Before>
+      <Actual>
+        <Byte>77</Byte>
+        <Byte>0B</Byte>
+      </Actual>
+      <After>
+        <Byte>8B</Byte>
+        <Byte>41</Byte>
+        <Byte>60</Byte>
+        <Byte>F3</Byte>
+        <Byte>0F</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry Color="20000000">
+      <Description>boss 2</Description>
+      <AddressString>game.exe+372AF9</AddressString>
+      <Before>
+        <Byte>08</Byte>
+        <Byte>F3</Byte>
+        <Byte>0F</Byte>
+        <Byte>5D</Byte>
+        <Byte>C8</Byte>
+      </Before>
+      <Actual>
+        <Byte>F3</Byte>
+        <Byte>0F</Byte>
+        <Byte>11</Byte>
+        <Byte>49</Byte>
+        <Byte>70</Byte>
+      </Actual>
+      <After>
+        <Byte>8B</Byte>
+        <Byte>87</Byte>
+        <Byte>80</Byte>
+        <Byte>04</Byte>
+        <Byte>00</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry Color="20000000">
+      <Description>替换了 call game.exe+3B7E50</Description>
+      <AddressString>game.exe+3B14D2</AddressString>
+      <Before>
+        <Byte>8B</Byte>
+        <Byte>7D</Byte>
+        <Byte>D4</Byte>
+        <Byte>8B</Byte>
+        <Byte>CF</Byte>
+      </Before>
+      <Actual>
+        <Byte>E8</Byte>
+        <Byte>79</Byte>
+        <Byte>69</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </Actual>
+      <After>
+        <Byte>88</Byte>
+        <Byte>46</Byte>
+        <Byte>14</Byte>
+        <Byte>8B</Byte>
+        <Byte>87</Byte>
+      </After>
+    </CodeEntry>
+  </CheatCodes>
+  <UserdefinedSymbols/>
+  <Comments>game.exe+1005AE - F3 0F 11 49 70         - movss [ecx+70],xmm1
+sdadjk_INJECT -   E9 4D FA A6 00           - jmp 01800000
+                  E8
+local res = AOBScan("F3 0F 11 49 70")
+if res == nil then return end
+for i=0, res.Count-1, 1 do
+  print( type( res[i] ) )
+end
+res.destroy()
+--[[
+local funAddres = getAddressSafe('newmemTest')
+local newJmpBytes = getJmpNewBytes(0x008E05AE, funAddres, 5, { 0xE8 })
+writeBytes(0x008E05AE, r)
+--]]
+-- writeBytes(0x008E05AE, {0xF3, 0x0F, 0x11, 0x49, 0x70})
+</Comments>
+</CheatTable>
